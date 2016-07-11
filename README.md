@@ -14,3 +14,6 @@ run `slack-notify --token "TOKEN"`, [click here](https://api.slack.com/docs/oaut
 
 ## Systema Requirements
 - xcowsay
+
+## TODO
+- Mention in message
