@@ -1,17 +1,21 @@
-import ujson
+"""WebSocket client"""
+from subprocess import call
 import logging
 from ws4py.client.threadedclient import WebSocketClient
-from subprocess import call
+import ujson
 
 class Client(WebSocketClient):
-    def set_info(self, info):
-        self.me = info['self']
+    """Websocket client implement"""
+    def __init__(self, info):
+        """Init class"""
+        super(Client, self).__init__(info['url'])
+        self.my_info = info['self']
         self.channels = {i['id']: i['name'] for i in info['channels']}
         self.groups = {i['id']: i['name'] for i in info['groups']}
         self.users = {i['id']: i['name'] for i in info['users']}
-        logging.debug('Channels: %s' % self.channels)
-        logging.debug('Groups: %s' % self.groups)
-        logging.debug('Users: %s' % self.users)
+        logging.debug('Channels: %s', self.channels)
+        logging.debug('Groups: %s', self.groups)
+        logging.debug('Users: %s', self.users)
 
     def opened(self):
         logging.info('Connection opened')
@@ -19,34 +23,33 @@ class Client(WebSocketClient):
     def received_message(self, recv):
         try:
             obj = ujson.decode(recv.data.decode('UTF-8'))
-            logging.debug('Data: %s' % obj)
-            if obj['user'] == self.me['id']:
+            logging.debug('Data: %s', obj)
+            if obj['user'] == self.my_info['id']:
                 return
             if obj['type'] == 'message':
-                try:
-                    channel = self.get_channel(obj['channel'])
+                channel = self.get_channel(obj['channel'])
+                if channel is not None:
                     msg = "%s: %s" % (channel, obj['text'])
-                except:
+                else:
                     user = self.get_user(obj['user'])
                     msg = "%s: %s" % (user, obj['text'])
-                logging.debug('Call xcowsay with %s' % msg)
+                logging.debug('Call xcowsay with %s', msg)
                 call(['xcowsay', msg])
-        except Exception as err:
-            logging.warning('Error[%s]: %s' % (obj['type'], err))
-            logging.debug('Data: %s' % recv)
+        except KeyError:
+            logging.warning('KeyError type: %s', obj['type'])
+            logging.debug('Data: %s', recv)
 
-    def closed(self, reason, msg):
-        logging.info("Closed[%d]: %s" %(reason, msg))
-
-    def get_channel(self, id):
+    def get_channel(self, code):
+        """Get channel name"""
         try:
-            return self.channels[id]
-        except:
-            return self.groups[id]
+            return self.channels[code]
+        except KeyError:
+            return self.groups[code]
         return None
 
-    def get_user(self, id):
+    def get_user(self, code):
+        """Get user name"""
         try:
-            return self.users[id]
-        except:
+            return self.users[code]
+        except KeyError:
             return None
