@@ -1,4 +1,5 @@
 # Slack-notify
+Connect with RTM API Slack to listen message and show xcowsay with message received
 
 ## Install
 - pip3 install slack-notify
@@ -12,8 +13,11 @@ run `slack-notify --token "TOKEN"`, [click here](https://api.slack.com/docs/oaut
 - ujson==4.35
 - ws4py==0.35.0
 
-## Systema Requirements
+## System Requirements
 - xcowsay
 
 ## TODO
 - Mention in message
+- Display user who sent message in group
+- Add version in help
+- Personalize xcowsay command
