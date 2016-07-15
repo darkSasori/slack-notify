@@ -27,16 +27,16 @@ class Client(WebSocketClient):
             if obj['user'] == self.my_info['id']:
                 return
             if obj['type'] == 'message':
-                channel = self.get_channel(obj['channel'])
-                if channel is not None:
+                try:
+                    channel = self.get_channel(obj['channel'])
                     msg = "%s: %s" % (channel, obj['text'])
-                else:
+                except KeyError:
                     user = self.get_user(obj['user'])
                     msg = "%s: %s" % (user, obj['text'])
                 logging.debug('Call xcowsay with %s', msg)
                 call(['xcowsay', msg])
-        except KeyError:
-            logging.warning('KeyError type: %s', obj['type'])
+        except KeyError as error:
+            logging.warning('KeyError[%s]: %s', obj['type'], error)
             logging.debug('Data: %s', recv)
 
     def get_channel(self, code):
