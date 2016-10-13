@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/slack-notify.svg)](https://badge.fury.io/py/slack-notify)
+
 # Slack-notify
 Connect with RTM API Slack to listen message and show xcowsay with message received
 
